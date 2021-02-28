@@ -1,0 +1,8 @@
+type Query {
+  locations: [Location]!
+  location(id: ID!): Location!
+  users: [User]!
+  user(id: ID!): User!
+  review(id: ID!): Review!
+  reviews: [Review]!
+}

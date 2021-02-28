@@ -1,0 +1,38 @@
+type Coordinates {
+  latitude: String!
+  longitude: String!
+}
+
+type Location {
+  _id: ID!
+  coordinates: Coordinates!
+  name: String!
+  reviews: [Review]!
+  creator: User!
+}
+
+input CoordinatesInput {
+  latitude: Int!
+  longitude: Int!
+}
+
+input LocationInput {
+  coordinates: CoordinatesInput!
+  name: String!
+  creator: ID!
+}
+
+type Review {
+  _id: ID!
+  rating: Int!
+  author: User!
+}
+
+type User {
+  _id: ID!
+  username: String!
+}
+
+input UserInput {
+  username: String!
+}
