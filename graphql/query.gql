@@ -1,3 +1,9 @@
+query GetLocations {
+  locations {
+    _id
+  }
+}
+
 type Query {
   locations: [Location]!
   location(id: ID!): Location!
