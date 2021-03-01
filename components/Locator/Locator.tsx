@@ -36,7 +36,7 @@ export default function Locator({ lat, lng, zoom }: Props): ReactElement {
           display: flex;
           flex-flow: row nowrap;
           align-items: center;
-          margin-right: 20px;
+          margin-right: 5px;
           width: 120px;
           height: 100%;
         }

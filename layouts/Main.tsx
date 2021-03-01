@@ -1,13 +1,31 @@
-import { Button, Menu, MenuItem } from '@material-ui/core'
+import { IconButton, Menu, MenuItem, Slide } from '@material-ui/core'
+import MenuIcon from '@material-ui/icons/MenuSharp'
+import Link from 'next/link'
 import React, { useState } from 'react'
 
 interface Props {}
 
+type MenuItem = {
+  title: string
+  href: string
+}
+
+const menu: MenuItem[] = [
+  {
+    title: 'home',
+    href: '/',
+  },
+  {
+    title: 'profile',
+    href: '/profile',
+  },
+]
+
 const Main: React.FC<Props> = ({ children }) => {
-  const [anchorEl, setAnchorEl] = useState(null)
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null)
 
   const handleClick: React.MouseEventHandler<HTMLButtonElement> = (e) => {
-    console.log(e)
+    setAnchorEl(e.currentTarget)
   }
   const handleClose = () => {
     setAnchorEl(null)
@@ -16,23 +34,40 @@ const Main: React.FC<Props> = ({ children }) => {
   return (
     <div className="container">
       <div className="menu">
-        <Button
+        <IconButton
+          style={{
+            backgroundColor: 'rgba(0,0,0,0.7)',
+            color: 'white',
+            borderRadius: 10,
+            padding: 8,
+          }}
           aria-controls="simple-menu"
           aria-haspopup="true"
           onClick={handleClick}
         >
-          Open Menu
-        </Button>
+          <MenuIcon fontSize="large" />
+        </IconButton>
         <Menu
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'center',
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'center',
+          }}
           id="simple-menu"
           anchorEl={anchorEl}
           keepMounted
-          open={Boolean(anchorEl)}
+          open={!!anchorEl}
           onClose={handleClose}
+          TransitionComponent={Slide}
         >
-          <MenuItem onClick={handleClose}>Profile</MenuItem>
-          <MenuItem onClick={handleClose}>My account</MenuItem>
-          <MenuItem onClick={handleClose}>Logout</MenuItem>
+          {menu.map((item) => (
+            <MenuItem onClick={handleClose}>
+              <Link href={item.href}>{item.title}</Link>
+            </MenuItem>
+          ))}
         </Menu>
       </div>
       <div className="child-container">{children}</div>
@@ -51,8 +86,8 @@ const Main: React.FC<Props> = ({ children }) => {
         .menu {
           z-index: 1;
           position: absolute;
-          top: 50;
-          left: 50;
+          top: 10px;
+          left: 10px;
         }
       `}</style>
     </div>
