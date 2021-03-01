@@ -16,104 +16,104 @@ export type Scalars = {
 };
 
 
-export type Mutation = {
+export type IMutation = {
   __typename?: 'Mutation';
-  addUser: User;
-  addLocation: Location;
+  addUser: IUser;
+  addLocation: ILocation;
 };
 
 
-export type MutationAddUserArgs = {
-  input: UserInput;
+export type IMutationAddUserArgs = {
+  input: IUserInput;
 };
 
 
-export type MutationAddLocationArgs = {
-  input: LocationInput;
+export type IMutationAddLocationArgs = {
+  input: ILocationInput;
 };
 
-export type Query = {
+export type IQuery = {
   __typename?: 'Query';
-  locations: Array<Maybe<Location>>;
-  location: Location;
-  users: Array<Maybe<User>>;
-  user: User;
-  review: Review;
-  reviews: Array<Maybe<Review>>;
+  locations: Array<Maybe<ILocation>>;
+  location: ILocation;
+  users: Array<Maybe<IUser>>;
+  user: IUser;
+  review: IReview;
+  reviews: Array<Maybe<IReview>>;
 };
 
 
-export type QueryLocationArgs = {
+export type IQueryLocationArgs = {
   id: Scalars['ID'];
 };
 
 
-export type QueryUserArgs = {
+export type IQueryUserArgs = {
   id: Scalars['ID'];
 };
 
 
-export type QueryReviewArgs = {
+export type IQueryReviewArgs = {
   id: Scalars['ID'];
 };
 
-export type Coordinates = {
+export type ICoordinates = {
   __typename?: 'Coordinates';
   latitude: Scalars['String'];
   longitude: Scalars['String'];
 };
 
-export type Location = {
+export type ILocation = {
   __typename?: 'Location';
   _id: Scalars['ID'];
-  coordinates: Coordinates;
+  coordinates: ICoordinates;
   name: Scalars['String'];
-  reviews: Array<Maybe<Review>>;
-  creator: User;
+  reviews: Array<Maybe<IReview>>;
+  creator: IUser;
 };
 
-export type CoordinatesInput = {
+export type ICoordinatesInput = {
   latitude: Scalars['Int'];
   longitude: Scalars['Int'];
 };
 
-export type LocationInput = {
-  coordinates: CoordinatesInput;
+export type ILocationInput = {
+  coordinates: ICoordinatesInput;
   name: Scalars['String'];
   creator: Scalars['ID'];
 };
 
-export type Review = {
+export type IReview = {
   __typename?: 'Review';
   _id: Scalars['ID'];
   rating: Scalars['Int'];
-  author: User;
+  author: IUser;
 };
 
-export type User = {
+export type IUser = {
   __typename?: 'User';
   _id: Scalars['ID'];
   username: Scalars['String'];
 };
 
-export type UserInput = {
+export type IUserInput = {
   username: Scalars['String'];
 };
 
-export enum CacheControlScope {
+export enum ICacheControlScope {
   Public = 'PUBLIC',
   Private = 'PRIVATE'
 }
 
 
-export type GetLocationsQueryVariables = Exact<{ [key: string]: never; }>;
+export type IGetLocationsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetLocationsQuery = (
+export type IGetLocationsQuery = (
   { __typename?: 'Query' }
   & { locations: Array<Maybe<(
     { __typename?: 'Location' }
-    & Pick<Location, '_id'>
+    & Pick<ILocation, '_id'>
   )>> }
 );
 
@@ -141,12 +141,12 @@ export const GetLocationsDocument = gql`
  *   },
  * });
  */
-export function useGetLocationsQuery(baseOptions?: Apollo.QueryHookOptions<GetLocationsQuery, GetLocationsQueryVariables>) {
-        return Apollo.useQuery<GetLocationsQuery, GetLocationsQueryVariables>(GetLocationsDocument, baseOptions);
+export function useGetLocationsQuery(baseOptions?: Apollo.QueryHookOptions<IGetLocationsQuery, IGetLocationsQueryVariables>) {
+        return Apollo.useQuery<IGetLocationsQuery, IGetLocationsQueryVariables>(GetLocationsDocument, baseOptions);
       }
-export function useGetLocationsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetLocationsQuery, GetLocationsQueryVariables>) {
-          return Apollo.useLazyQuery<GetLocationsQuery, GetLocationsQueryVariables>(GetLocationsDocument, baseOptions);
+export function useGetLocationsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<IGetLocationsQuery, IGetLocationsQueryVariables>) {
+          return Apollo.useLazyQuery<IGetLocationsQuery, IGetLocationsQueryVariables>(GetLocationsDocument, baseOptions);
         }
 export type GetLocationsQueryHookResult = ReturnType<typeof useGetLocationsQuery>;
 export type GetLocationsLazyQueryHookResult = ReturnType<typeof useGetLocationsLazyQuery>;
-export type GetLocationsQueryResult = Apollo.QueryResult<GetLocationsQuery, GetLocationsQueryVariables>;
+export type GetLocationsQueryResult = Apollo.QueryResult<IGetLocationsQuery, IGetLocationsQueryVariables>;
