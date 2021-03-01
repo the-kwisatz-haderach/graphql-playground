@@ -1,16 +1,17 @@
 import { Resolver } from '@apollo/client'
-import { Db, MongoClient } from 'mongodb'
+import { MongoClient } from 'mongodb'
+import queries from '../db/queries'
 
 export type Context = {
-  db: Db
+  queries: ReturnType<typeof queries>
   dbClient: MongoClient
 }
 
 export type ResolverFn<R = any, A = any, C = any> = (
-  rootValue?: R,
-  args?: A,
-  context?: C,
-  info?: Parameters<Resolver>['3']
+  rootValue: R,
+  args: A,
+  context: C,
+  info: Parameters<Resolver>['3']
 ) => any
 
 export type ResolverMap = {

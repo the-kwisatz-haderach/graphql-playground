@@ -1,4 +1,6 @@
-import { Db, MongoClient } from 'mongodb'
+import { MongoClient } from 'mongodb'
+import { Context } from '../../graphql/types'
+import queries from '../queries'
 import setupDb from './setupDb'
 
 const { MONGODB_URI, MONGODB_DB } = process.env as any
@@ -15,16 +17,13 @@ if (!MONGODB_DB) {
   )
 }
 
-let cached = (global as any).mongo
+let cached: { conn: Context; promise: Promise<Context> } = (global as any).mongo
 
 if (!cached) {
   cached = (global as any).mongo || { conn: null, promise: null }
 }
 
-export default async function connectToDb(): Promise<{
-  dbClient: MongoClient
-  db: Db
-}> {
+export default async function connectToDb(): Promise<Context> {
   if (cached.conn) {
     return cached.conn
   }
@@ -42,7 +41,7 @@ export default async function connectToDb(): Promise<{
 
       return {
         dbClient,
-        db,
+        queries: queries(db),
       }
     })
   }

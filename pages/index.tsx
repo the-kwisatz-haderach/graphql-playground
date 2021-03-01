@@ -1,24 +1,26 @@
 import Head from 'next/head'
+import { useQuery } from '@apollo/client'
 import { useEffect, useRef, useState } from 'react'
 import { GetStaticProps } from 'next'
 import mapboxgl from 'mapbox-gl'
+import { Location } from '../types/graphql'
+import connectToDb from '../db/utils/connectToDb'
+import queries from '../db/queries'
 
 type Props = {
-  accessToken?: string
+  locations: Location[]
 }
 
-function HomePage({ accessToken }: Props) {
+mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOXGL_ACCESS_TOKEN as string
+
+function HomePage({ locations }: Props) {
   const mapContainer = useRef<HTMLDivElement>(null)
-  const [lng, setLng] = useState(-70.9)
-  const [lat, setLat] = useState(42.35)
+  const [lng, setLng] = useState(125.6)
+  const [lat, setLat] = useState(10.1)
   const [zoom, setZoom] = useState(9)
 
   useEffect(() => {
-    if (!mapboxgl.accessToken && accessToken) {
-      mapboxgl.accessToken = accessToken
-    }
-
-    let map: any
+    let map: mapboxgl.Map
     if (mapContainer.current && !map) {
       map = new mapboxgl.Map({
         container: mapContainer.current,
@@ -27,14 +29,23 @@ function HomePage({ accessToken }: Props) {
         zoom: zoom,
       })
 
+      locations.forEach((location) => {
+        new mapboxgl.Marker()
+          .setLngLat([
+            +location.coordinates.longitude,
+            +location.coordinates.latitude,
+          ])
+          .addTo(map)
+      })
+
       map.on('move', () => {
-        setLng(map.getCenter().lng.toFixed(4))
-        setLat(map.getCenter().lat.toFixed(4))
-        setZoom(map.getZoom().toFixed(2))
+        setLng(+map.getCenter().lng.toFixed(4))
+        setLat(+map.getCenter().lat.toFixed(4))
+        setZoom(+map.getZoom().toFixed(2))
       })
     }
     return () => map.remove()
-  }, [mapContainer])
+  }, [mapContainer, locations])
 
   return (
     <div>
@@ -57,9 +68,13 @@ function HomePage({ accessToken }: Props) {
 }
 
 export const getStaticProps: GetStaticProps<Props> = async () => {
+  const { queries } = await connectToDb()
+
+  const locations = await queries.findLocations()
+
   return {
     props: {
-      accessToken: process.env.MAPBOXGL_ACCESS_TOKEN,
+      locations,
     },
   }
 }

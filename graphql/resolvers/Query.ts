@@ -1,24 +1,23 @@
-import { ObjectId } from 'mongodb'
 import { ResolverMap } from '../types'
 
 const Query: ResolverMap[keyof ResolverMap] = {
-  locations(_, __, context) {
-    return context?.db.collection('locations').find({}).toArray()
+  locations(_, __, { queries }) {
+    return queries.findLocations()
   },
-  location(_, { id }, context) {
-    return context?.db.collection('locations').findOne(new ObjectId(id))
+  location(_, { id }, { queries }) {
+    return queries.findLocation(id)
   },
-  users(_, __, context) {
-    return context?.db.collection('users').find({}).toArray()
+  users(_, __, { queries }) {
+    return queries.findUsers()
   },
-  user(_, { id }, context) {
-    return context?.db.collection('users').findOne(new ObjectId(id))
+  user(_, { id }, { queries }) {
+    return queries.findUser(id)
   },
-  review(_, { id }, context) {
-    return context?.db.collection('reviews').findOne(new ObjectId(id))
+  review(_, { id }, { queries }) {
+    return queries.findReview(id)
   },
-  reviews(_, __, context) {
-    return context?.db.collection('reviews').find({}).toArray()
+  reviews(_, __, { queries }) {
+    return queries.findReviews()
   },
 }
 
