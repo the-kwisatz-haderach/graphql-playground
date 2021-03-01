@@ -93,6 +93,18 @@ function HomePage({ locations }: Props) {
 
       // Add zoom and rotation controls to the map.
       map.addControl(new mapboxgl.NavigationControl())
+
+      // Add geolocate control to the map.
+      map.addControl(
+        new mapboxgl.GeolocateControl({
+          positionOptions: {
+            enableHighAccuracy: true,
+          },
+          trackUserLocation: true,
+        })
+      )
+
+      map.addControl(new mapboxgl.FullscreenControl())
     }
     return () => map.remove()
   }, [mapContainer, locations])
