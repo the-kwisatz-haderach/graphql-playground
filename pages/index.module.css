@@ -1,0 +1,60 @@
+.locator-container {
+  width: 400px;
+  position: absolute;
+  left: calc(50% - 200px);
+  top: 10px;
+  z-index: 1;
+}
+
+.add-location-button {
+  position: absolute;
+  z-index: 50;
+  right: 10px;
+  bottom: 10px;
+}
+
+.info-button {
+  position: absolute;
+  z-index: 50;
+  left: 10px;
+  bottom: 10px;
+}
+
+.info-form {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: calc(100% - 20px);
+  height: calc(50% - 20px);
+  margin: 10px;
+  z-index: 10;
+  padding: 20px;
+  clip-path: ellipse(0px 0px at 8% 96%);
+  transition: clip-path 0.5s ease-in-out;
+  background-color: white;
+  box-shadow: 5px 5px 10px 5px rgb(0 0 0 / 10%);
+  border-radius: 25px;
+}
+
+.info-form--open {
+  clip-path: ellipse(100% 100%);
+}
+
+.location {
+  position: fixed;
+  pointer-events: none;
+  width: 100px;
+  height: 100px;
+  top: calc(50vh - 65px);
+  left: calc(50vw - 51px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 50;
+  transition: transform 0.2s ease-in-out;
+  transform: translateY(-60vh);
+}
+
+.location--adding {
+  transform: translateY(0);
+}

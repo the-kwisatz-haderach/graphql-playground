@@ -1,13 +1,19 @@
 import Head from 'next/head'
-import { useQuery } from '@apollo/client'
 import { useEffect, useRef, useState } from 'react'
 import { GetStaticProps } from 'next'
-import mapboxgl from 'mapbox-gl'
+import mapboxgl, { MapboxEvent } from 'mapbox-gl'
 import Main from '../layouts/Main'
 import { ILocation } from '../types/graphql'
 import connectToDb from '../db/utils/connectToDb'
-import convertToGeoJSON from '../lib/mapBoxUtils/convertToGeoJSON'
 import Locator from '../components/Locator'
+import initializeMap from '../lib/mapBoxUtils/initializeMap'
+import addDataLayer from '../lib/mapBoxUtils/addDataLayer'
+import styles from './index.module.css'
+import { AddLocation, CloseSharp, Add } from '@material-ui/icons'
+import HelpIcon from '@material-ui/icons/Help'
+import { IconButton } from '../components/IconButton'
+import { IconButton as MuiIconButton } from '@material-ui/core'
+import LocationIcon from '../components/LocationIcon/LocationIcon'
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOXGL_ACCESS_TOKEN as string
 
@@ -15,99 +21,81 @@ type Props = {
   locations: ILocation[]
 }
 
+const INITIAL_LNG = 125.6
+const INITIAL_LAT = 10.1
+const INITIAL_ZOOM = 9
+
 function HomePage({ locations }: Props) {
   const mapContainer = useRef<HTMLDivElement>(null)
-  const [lng, setLng] = useState(125.6)
-  const [lat, setLat] = useState(10.1)
-  const [zoom, setZoom] = useState(9)
+  const mapRef = useRef<mapboxgl.Map>()
+  const markerRef = useRef<mapboxgl.Marker>()
+  const [showInfo, setShowInfo] = useState(false)
+  const [isAdding, setIsAdding] = useState(false)
+  const [isMoving, setIsMoving] = useState(false)
+
+  const handleAddLocation = () => {
+    setIsAdding((curr) => !curr)
+  }
 
   useEffect(() => {
-    let map: mapboxgl.Map
-
-    if (mapContainer.current) {
-      map = new mapboxgl.Map({
-        container: mapContainer.current,
-        style: 'mapbox://styles/mapbox/light-v10',
-        center: [lng, lat],
-        zoom,
-      })
-
-      const popup = new mapboxgl.Popup({
-        closeButton: false,
-        closeOnClick: false,
-      })
-
-      map.on('move', () => {
-        setLng(+map.getCenter().lng.toFixed(4))
-        setLat(+map.getCenter().lat.toFixed(4))
-        setZoom(+map.getZoom().toFixed(2))
-      })
-
-      map.on('load', () => {
-        const layerName = 'points'
-
-        map.addSource(layerName, convertToGeoJSON(locations))
-        map.addLayer({
-          id: 'symbols',
-          type: 'circle',
-          source: layerName,
-          paint: {
-            'circle-color': '#918af7',
-            'circle-stroke-color': '#3327e5',
-            'circle-stroke-width': 2,
-          },
-        })
-      })
-
-      map.on('click', 'symbols', function (e) {
-        if (e.features) {
-          map.flyTo({
-            center: e.features[0].geometry.coordinates,
-          })
-        }
-      })
-
-      // Change the cursor to a pointer when the it enters a feature in the 'symbols' layer.
-      map.on('mouseenter', 'symbols', function (e) {
-        map.getCanvas().style.cursor = 'pointer'
-        const coordinates = e.features[0].geometry.coordinates.slice()
-        const description = e.features[0].properties.description
-
-        // Ensure that if the map is zoomed out such that multiple
-        // copies of the feature are visible, the popup appears
-        // over the copy being pointed to.
-        while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
-          coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360
-        }
-
-        // Populate the popup and set its coordinates
-        // based on the feature found.
-        popup.setLngLat(coordinates).setHTML(description).addTo(map)
-      })
-
-      // Change it back to a pointer when it leaves.
-      map.on('mouseleave', 'symbols', function () {
-        map.getCanvas().style.cursor = ''
-        popup.remove()
-      })
-
-      // Add zoom and rotation controls to the map.
-      map.addControl(new mapboxgl.NavigationControl())
-
-      // Add geolocate control to the map.
-      map.addControl(
-        new mapboxgl.GeolocateControl({
-          positionOptions: {
-            enableHighAccuracy: true,
-          },
-          trackUserLocation: true,
-        })
-      )
-
-      map.addControl(new mapboxgl.FullscreenControl())
+    if (markerRef.current) {
+      markerRef.current.remove()
     }
-    return () => map.remove()
-  }, [mapContainer, locations])
+    if (mapRef.current) {
+      const [lng, lat] = mapRef.current.getCenter().toArray()
+      markerRef.current = new mapboxgl.Marker({ draggable: true })
+        .setLngLat([lng, lat])
+        .addTo(mapRef.current)
+    }
+
+    let handleMoveEnd = ({ target }: MapboxEvent) => {
+      setIsMoving(false)
+      const [lng, lat] = target.getCenter().toArray()
+      markerRef.current = new mapboxgl.Marker({ draggable: true })
+        .setLngLat([lng, lat])
+        .addTo(target)
+    }
+    let handleMoveStart = () => {
+      setIsMoving(true)
+      if (markerRef.current) {
+        markerRef.current.remove()
+      }
+    }
+    if (mapRef.current) {
+      if (isAdding) {
+        mapRef.current.on('movestart', handleMoveStart)
+        mapRef.current.on('moveend', handleMoveEnd)
+      } else {
+        markerRef.current?.remove()
+        mapRef.current.off('moveend', handleMoveEnd)
+        mapRef.current.off('movestart', handleMoveStart)
+      }
+    }
+
+    return () => {
+      if (mapRef.current) {
+        mapRef.current.off('movestart', handleMoveStart)
+        mapRef.current.off('moveend', handleMoveEnd)
+      }
+    }
+  }, [mapRef, markerRef, isAdding])
+
+  useEffect(() => {
+    if (!mapRef.current) {
+      mapRef.current = new mapboxgl.Map({
+        container: mapContainer.current ?? '',
+        style: 'mapbox://styles/mapbox/light-v10',
+        center: [INITIAL_LNG, INITIAL_LAT],
+        zoom: INITIAL_ZOOM,
+      })
+
+      initializeMap(mapRef.current)
+      addDataLayer(mapRef.current, locations)
+    }
+    return () => {
+      mapRef?.current?.remove()
+    }
+  }, [mapRef, locations])
 
   return (
     <Main>
@@ -117,23 +105,59 @@ function HomePage({ locations }: Props) {
           rel="stylesheet"
         />
       </Head>
-      <div className="locator-container">
-        <Locator lat={lat} lng={lng} zoom={zoom} />
+      <div className={styles['add-location-button']}>
+        <MuiIconButton
+          onClick={handleAddLocation}
+          size="medium"
+          aria-label="add location"
+        >
+          <>
+            {isAdding ? (
+              <CloseSharp fontSize="large" />
+            ) : (
+              <Add fontSize="large" />
+            )}
+          </>
+        </MuiIconButton>
+      </div>
+      <div
+        className={`${styles.location} ${
+          isAdding ? styles['location--adding'] : ''
+        }`}
+      >
+        {isMoving && <LocationIcon style={{ fontSize: 40 }} />}
+      </div>
+      <div className={styles['info-button']}>
+        <IconButton
+          onToggle={() => {
+            setShowInfo((curr) => !curr)
+          }}
+          size="medium"
+          aria-label="add location"
+        >
+          <HelpIcon fontSize="large" />
+        </IconButton>
+      </div>
+      <div
+        className={`${styles['info-form']} ${
+          showInfo ? styles['info-form--open'] : ''
+        }`}
+      >
+        {showInfo && (
+          <>
+            <h1>Title</h1>
+            <p>
+              Lorem ipsum dolor sit, amet consectetur adipisicing elit.
+              Adipisci, nam?
+            </p>
+          </>
+        )}
       </div>
       <div
         id="map"
         ref={mapContainer}
         style={{ height: '100vh', width: '100vw' }}
       />
-      <style jsx>{`
-        .locator-container {
-          width: 400px;
-          position: absolute;
-          left: calc(50% - 200px);
-          top: 10px;
-          z-index: 1;
-        }
-      `}</style>
     </Main>
   )
 }

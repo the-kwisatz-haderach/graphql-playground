@@ -64,7 +64,7 @@ const Main: React.FC<Props> = ({ children }) => {
           TransitionComponent={Slide}
         >
           {menu.map((item) => (
-            <MenuItem onClick={handleClose}>
+            <MenuItem key={item.title} onClick={handleClose}>
               <Link href={item.href}>{item.title}</Link>
             </MenuItem>
           ))}
