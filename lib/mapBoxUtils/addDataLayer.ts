@@ -7,18 +7,15 @@ export default function addDataLayer(
   locationData: ILocation[]
 ): void {
   map.on('load', () => {
-    const layerName = 'points'
-
-    map.addSource(layerName, convertToGeoJSON(locationData))
-    map.addLayer({
-      id: 'symbols',
-      type: 'circle',
-      source: layerName,
-      paint: {
-        'circle-color': '#918af7',
-        'circle-stroke-color': '#3327e5',
-        'circle-stroke-width': 2,
-      },
+    const locations = convertToGeoJSON(locationData)
+    locations?.data?.features.forEach((feature) => {
+      const el = document.createElement('div')
+      el.className = 'marker'
+      const icon = document.createElement('i')
+      icon.className = 'fas fa-toilet'
+      el.appendChild(icon)
+      const [lng, lat] = feature.geometry.coordinates
+      new mapboxgl.Marker(el).setLngLat([lng, lat]).addTo(map)
     })
   })
 }

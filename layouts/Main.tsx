@@ -1,5 +1,6 @@
 import { IconButton, Menu, MenuItem, Slide } from '@material-ui/core'
 import MenuIcon from '@material-ui/icons/MenuSharp'
+import Head from 'next/head'
 import Link from 'next/link'
 import React, { useState } from 'react'
 
@@ -33,43 +34,6 @@ const Main: React.FC<Props> = ({ children }) => {
 
   return (
     <div className="container">
-      <div className="menu">
-        <IconButton
-          style={{
-            backgroundColor: 'rgba(0,0,0,0.7)',
-            color: 'white',
-            borderRadius: 10,
-            padding: 8,
-          }}
-          aria-controls="simple-menu"
-          aria-haspopup="true"
-          onClick={handleClick}
-        >
-          <MenuIcon fontSize="large" />
-        </IconButton>
-        <Menu
-          anchorOrigin={{
-            vertical: 'top',
-            horizontal: 'center',
-          }}
-          transformOrigin={{
-            vertical: 'top',
-            horizontal: 'center',
-          }}
-          id="simple-menu"
-          anchorEl={anchorEl}
-          keepMounted
-          open={!!anchorEl}
-          onClose={handleClose}
-          TransitionComponent={Slide}
-        >
-          {menu.map((item) => (
-            <MenuItem key={item.title} onClick={handleClose}>
-              <Link href={item.href}>{item.title}</Link>
-            </MenuItem>
-          ))}
-        </Menu>
-      </div>
       <div className="child-container">{children}</div>
       <style jsx>{`
         .container {

@@ -1,11 +1,8 @@
-import { AnySourceData } from 'mapbox-gl'
 import { ILocation } from '../../types/graphql'
 
 const DATA_TYPE = 'geojson'
 
-export default function convertToGeoJSON(
-  locations: ILocation[]
-): AnySourceData {
+export default function convertToGeoJSON(locations: ILocation[]) {
   return {
     type: DATA_TYPE,
     data: {

@@ -1,0 +1,21 @@
+.container {
+  position: fixed;
+  display: flex;
+  justify-content: center;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  margin-bottom: 10px;
+  pointer-events: none;
+}
+
+.container > * {
+  transform: translateY(calc(100% + 10px));
+  transition: transform 0.4s ease-in-out;
+}
+
+.active > * {
+  pointer-events: visible;
+  transform: translateY(0);
+}

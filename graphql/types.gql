@@ -3,11 +3,18 @@ type Coordinates {
   longitude: String!
 }
 
+type Facility {
+  _id: ID!
+  name: String!
+}
+
 type Location {
   _id: ID!
   coordinates: Coordinates!
   name: String!
+  type: String!
   reviews: [Review]!
+  facilities: [Facility]!
   creator: User!
 }
 
@@ -19,6 +26,7 @@ input CoordinatesInput {
 input LocationInput {
   coordinates: CoordinatesInput!
   name: String!
+  type: String!
   creator: ID!
 }
 

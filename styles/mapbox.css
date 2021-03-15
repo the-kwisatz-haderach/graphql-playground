@@ -5,15 +5,12 @@
 }
 
 .mapboxgl-popup-content {
-  background-color: aliceblue;
-  box-shadow: 2px 3px 9px 4px rgb(0 0 0 / 10%);
-  padding: 20px;
+  padding: 0px;
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
 }
 
-.mapboxgl-popup-tip {
-  border-top-color: aliceblue !important;
-}
-
-.mapboxgl-popup-close-button {
-  font-size: 20px;
+.mapboxgl-ctrl-bottom-right {
+  display: none;
 }

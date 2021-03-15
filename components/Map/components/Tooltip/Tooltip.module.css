@@ -1,0 +1,23 @@
+.container {
+  border-radius: 20px;
+  background-color: white;
+  box-shadow: 2px 3px 9px 4px rgb(0 0 0 / 10%);
+  padding: 18px;
+  border: 1px solid #dadada;
+  position: relative;
+}
+
+.closeButton {
+  position: absolute;
+  right: calc(50% - 9px);
+  top: -37px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  background-color: black;
+  justify-content: center;
+  border: 1px solid black;
+  color: white;
+  align-items: center;
+}
